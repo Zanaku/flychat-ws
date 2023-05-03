@@ -30,7 +30,7 @@ function sendMessage() {
   $('#n').prop('disabled', true);
   $('#n').css('background', 'grey');
   $('#n').css('color', 'white');
-  const msg = { type: 'message', name: name, message: $('#m').val() };
+  const msg = { type: 0, id: name, data: $('#m').val() };
   socket.send(JSON.stringify(msg));
   $('#m').val('');
   return false;
