@@ -7,7 +7,7 @@ const MAX_PEERS = 4096;
 const MAX_LOBBIES = 1024;
 const ALFNUM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-const NO_LOBBY_TIMEOUT = 1000;
+const NO_LOBBY_TIMEOUT = 3000;
 const SEAL_CLOSE_TIMEOUT = 10000;
 const PING_INTERVAL = 10000;
 
@@ -81,7 +81,7 @@ class Peer {
     this.id = id;
     this.ws = ws;
     this.lobby = '';
-    // Close connection after 1 sec if client has not joined a lobby
+    // Close connection after 3 sec if client has not joined a lobby
     this.timeout = setTimeout(() => {
       if (!this.lobby) {
         ws.close(4000, STR_NO_LOBBY);
@@ -259,6 +259,7 @@ server.on('connection', (socket) => {
   peersCount++;
   const id = randomId();
   const peer = new Peer(id, socket);
+  console.log("Peer %s connected, waiting for lobby establish.",peer)
   socket.on('message', (message) => {
     if (typeof message !== 'string') {
       socket.close(4000, STR_INVALID_TRANSFER_MODE);
