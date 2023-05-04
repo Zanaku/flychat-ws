@@ -2,6 +2,7 @@ const { createServer }  = require('http');
 const express = require('express');
 const WebSocket=require('ws');
 const crypto = require('crypto');
+const cors = require('cors')
 
 const MAX_PEERS = 4096;
 const MAX_LOBBIES = 1024;
@@ -30,6 +31,7 @@ const STR_INVALID_TRANSFER_MODE = 'Invalid transfer mode, must be text';
 const app=express();
 app.use(express.json({ extended: false}));
 app.use(express.static('public'));
+app.use(cors())
 
 const CMD = {
   JOIN: 0, // eslint-disable-line sort-keys
