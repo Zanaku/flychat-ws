@@ -39,7 +39,7 @@ const CMD = {
   OFFER: 4, // eslint-disable-line sort-keys
   ANSWER: 5, // eslint-disable-line sort-keys
   CANDIDATE: 6, // eslint-disable-line sort-keys
-  SEAL: 7, // eslint-disable-line sort-keys
+  SEAL: 7 // eslint-disable-line sort-keys
 };
 
 var port = process.env.PORT || 3000;
@@ -294,6 +294,19 @@ server.on('connection', (socket) => {
     console.error(error);
   });
 });
+
+app.get('/lobbies',(req,res)=>{
+  console.log(lobbies)
+  var oblobs = Array.from(lobbies.values())
+  var payload = oblobs.map((lob => {
+    return {
+      name:lob.name,
+      players:lob.peers.length,
+      sealed:lob.sealed
+    }
+  }))
+  res.json(payload)
+})
 
 const interval = setInterval(() => { // eslint-disable-line no-unused-vars
   server.clients.forEach((ws) => {
