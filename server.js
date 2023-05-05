@@ -81,6 +81,7 @@ class ProtoError extends Error {
 class Peer {
   constructor(id, ws) {
     this.id = id;
+    this.display_name ='';
     this.ws = ws;
     this.lobby = '';
     // Close connection after 3 sec if client has not joined a lobby
@@ -93,8 +94,9 @@ class Peer {
 }
 
 class Lobby {
-  constructor(name, host, mesh) {
+  constructor(name, display_name,host, mesh) {
     this.name = name;
+    this.display_name = display_name
     this.host = host;
     this.mesh = mesh;
     this.peers = [];
@@ -165,7 +167,7 @@ class Lobby {
 const lobbies = new Map();
 let peersCount = 0;
 
-function joinLobby(peer, pLobby, mesh) {
+function joinLobby(peer, pLobby,pDisplay, mesh) {
   let lobbyName = pLobby;
   if (lobbyName === '') {
     if (lobbies.size >= MAX_LOBBIES) {
@@ -176,7 +178,7 @@ function joinLobby(peer, pLobby, mesh) {
       throw new ProtoError(4000, STR_ALREADY_IN_LOBBY);
     }
     lobbyName = randomSecret();
-    lobbies.set(lobbyName, new Lobby(lobbyName, peer.id, mesh));
+    lobbies.set(lobbyName, new Lobby(lobbyName,pDisplay ,peer.id, mesh));
     console.log(`Peer ${peer.id} created lobby ${lobbyName}`);
     console.log(`Open lobbies: ${lobbies.size}`);
   }
@@ -212,7 +214,9 @@ function parseMsg(peer, msg) {
 
   // Lobby joining.
   if (type === CMD.JOIN) {
-    joinLobby(peer, data, id === 0);
+    var parsedData = JSON.parse(data)
+    console.log(parsedData)
+    joinLobby(peer, parsedData[0],parsedData[1], id === 0);
     return;
   }
 
@@ -302,7 +306,8 @@ app.get('/lobbies',(req,res)=>{
   var oblobs = Array.from(lobbies.values())
   var payload = oblobs.map((lob => {
     return {
-      name:lob.name,
+      id:lob.name,
+      display_name:lob.display_name,
       players:lob.peers.length,
       sealed:lob.sealed
     }
